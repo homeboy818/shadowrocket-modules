@@ -16,7 +16,7 @@ DOMAIN-SUFFIX,tanx.com,REJECT
 ^https?:\/\/i\d\.hdslb\.com\/bfs\/sycp(_brand)?\/ - reject-img
 
 [Script]
-# 清空开屏列表：list / show / brand/list / event/list2
+# 让开屏条目（含已缓存的）失效：list / show / brand/list / event/list2
 bili-splash = type=http-response,pattern=^https:\/\/app\.bilibili\.com\/x\/v2\/splash\/(list|show|brand\/list|event\/list2),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/homeboy818/shadowrocket-modules/main/scripts/bilibili_splash.js?v=2
 
 [MITM]
