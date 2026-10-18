@@ -1,0 +1,57 @@
+#!name=蜗牛睡眠去开屏广告
+#!desc=拦截蜗牛睡眠(com.seblong.app.IDream)的广告配置、TopOn/GroMore 聚合及各家广告联盟 SDK，无需 MITM。根据 2026-10-18 代理日志整理。
+#!author=Jinyang
+#!category=去广告
+
+[Rule]
+# ============ 1. 源头：App 自身广告配置 ============
+# 若 App 内某功能异常，先注释掉这一行试试
+DOMAIN,ad.snailsleep.net,REJECT
+# 可选：App 内弹窗（非开屏），需要时取消注释（需 MITM snailsleep.net）
+# 见下方 [URL Rewrite]
+
+# ============ 2. 聚合平台 ============
+# TopOn / AnyThink（广告位策略 da、上报 tk、竞价 bid）
+DOMAIN-SUFFIX,anythinktech.com,REJECT
+DOMAIN-SUFFIX,toponad.com,REJECT
+DOMAIN-SUFFIX,statisticslinks.com,REJECT
+# 穿山甲 / GroMore
+DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
+DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
+
+# ============ 3. 大厂广告联盟 ============
+# 腾讯优量汇（含 UDP/QUIC 的 sdkquic.e.qq.com）
+DOMAIN-SUFFIX,gdt.qq.com,REJECT
+DOMAIN-SUFFIX,e.qq.com,REJECT
+# 百度联盟
+DOMAIN,mobads.baidu.com,REJECT
+DOMAIN,mobads-logs.baidu.com,REJECT
+DOMAIN,mobads-pre-config.cdn.bcebos.com,REJECT
+DOMAIN,feed-image.baidu.com,REJECT
+DOMAIN,bgg.baidu.com,REJECT
+# 快手联盟（gdfp.gifshow.com 是设备指纹，若影响快手 App 可注释）
+DOMAIN,open.e.kuaishou.com,REJECT
+DOMAIN,gdfp.gifshow.com,REJECT
+
+# ============ 4. 中小 ADX / DSP（日志里漏网的） ============
+DOMAIN-SUFFIX,1rtb.net,REJECT
+DOMAIN-SUFFIX,beizi.biz,REJECT
+DOMAIN-SUFFIX,adwangmai.com,REJECT
+DOMAIN-SUFFIX,66mobi.com,REJECT
+DOMAIN-SUFFIX,buluken.com,REJECT
+DOMAIN-SUFFIX,hzzfcm.com,REJECT
+DOMAIN-SUFFIX,hubcloud.com.cn,REJECT
+DOMAIN-SUFFIX,tuia.cn,REJECT
+DOMAIN-SUFFIX,shanghailingye.cn,REJECT
+DOMAIN,jt-sdk-ios.oss-cn-beijing.aliyuncs.com,REJECT
+
+[URL Rewrite]
+# 广告素材兜底（拼多多投放的 720x1280 开屏图）
+^https?:\/\/images\.pinduoduo\.com\/marketing_api - reject-img
+# 可选：App 内弹窗配置，需要时取消注释并在 [MITM] 加上 snailsleep.net
+# ^https?:\/\/snailsleep\.net\/snail\/v1\/app\/popup\/config\/get - reject-dict
+
+[MITM]
+hostname = %APPEND% images.pinduoduo.com
