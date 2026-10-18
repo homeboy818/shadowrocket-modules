@@ -1,5 +1,5 @@
 #!name=哔哩哔哩去开屏广告
-#!desc=让 B 站开屏广告（含品牌/活动开屏和已缓存的开屏）失效，并拦截开屏素材和广告上报。需开启 MITM。v2
+#!desc=让 B 站开屏广告（含品牌/活动开屏和已缓存的开屏）失效，并拦截开屏素材和广告上报。需开启 MITM。v3
 #!author=homeboy818
 #!category=去广告
 
@@ -10,14 +10,16 @@ DOMAIN,impression.biligame.com,REJECT
 DOMAIN-SUFFIX,tanx.com,REJECT
 
 [URL Rewrite]
-# 开屏视频素材（http 明文，无需 MITM）
+# 开屏视频素材（http 和 https 都会出现，https 需 MITM upos-sz-static）
 ^https?:\/\/upos-[^\/]+\.bilivideo\.com\/ssaxcode\/.+SPLASH\.mp4 - reject
-# 开屏/商业图片素材（sycp = 商业产品，sycp_brand = 品牌开屏）
-^https?:\/\/i\d\.hdslb\.com\/bfs\/sycp(_brand)?\/ - reject-img
+# 闲时预下载列表（会提前下载开屏素材）
+^https:\/\/app\.bilibili\.com\/x\/resource\/peak\/download - reject-dict
+# 开屏/商业图片素材（sycp = 商业产品，sycp_brand = 品牌开屏，splash = 开屏图）
+^https?:\/\/i\d\.hdslb\.com\/bfs\/(sycp(_brand)?|splash)\/ - reject-img
 
 [Script]
 # 让开屏条目（含已缓存的）失效：list / show / brand/list / event/list2
 bili-splash = type=http-response,pattern=^https:\/\/app\.bilibili\.com\/x\/v2\/splash\/(list|show|brand\/list|event\/list2),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/homeboy818/shadowrocket-modules/main/scripts/bilibili_splash.js?v=2
 
 [MITM]
-hostname = %APPEND% app.bilibili.com, i0.hdslb.com, i1.hdslb.com, i2.hdslb.com
+hostname = %APPEND% app.bilibili.com, i0.hdslb.com, i1.hdslb.com, i2.hdslb.com, upos-sz-static.bilivideo.com
